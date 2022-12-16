@@ -1,29 +1,42 @@
 import React, { useState } from 'react';
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import auth from '../../firebase.init';
 
 const Login = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleNameChange = e => setName(e.target.value);
-    const handleEmailChange = e => setEmail(e.target.value);
-    const handlePasswordChange = e => setPassword(e.target.value);
+    const [
+        signInWithEmailAndPassword,
+        user,
+        loading,
+        error,
+    ] = useSignInWithEmailAndPassword(auth);
 
-    const handlesubmit = (e) => {
-        console.log(name, email, password);
+    const handleEmail = e => setEmail(e.target.value);
+    const handlePass = e => setPassword(e.target.value);
+    const handleSignIn = (e) => {
         e.preventDefault();
+        signInWithEmailAndPassword(email, password);
+        // console.log(email, password);
+    }
+    if (user) {
+        toast("Logged In successfully");
     }
 
     return (
-
-        <div className='mt-5'>
-            <p className='text-3xl'>Please Login <span className='text-green-300 font-bold'>{name}</span></p>
-            <form onSubmit={handlesubmit}>
-                <input onBlur={handleNameChange} className='block w-80 mx-auto m-4 bg-slate-100 p-2 border-2 border-gray-500 rounded' type="text" name="name" placeholder='enter your name' />
-                <input onBlur={handleEmailChange} className='block w-80 mx-auto m-4 bg-slate-100 p-2 border-2 border-gray-500 rounded' type="text" name="email" placeholder='enter your email' />
-                <input onBlur={handlePasswordChange} className='block w-80 mx-auto m-4 bg-slate-100 p-2 border-2 border-gray-500 rounded' type="password" name="password" placeholder='enter password' />
-                <input className='block w-80 mx-auto m-4 bg-slate-600 p-2 rounded text-white' type="submit" />
+        <div className='mt-10'>
+            <p className='text-4xl font-bold'>Please Login First</p>
+            <form onSubmit={handleSignIn}>
+                <input onBlur={handleEmail} className='block w-80 mx-auto m-4 bg-slate-100 p-2 border-2 border-gray-500 rounded' name='email' type="email" placeholder='Enter your email'></input>
+                <input onBlur={handlePass} className='block w-80 mx-auto m-4 bg-slate-100 p-2 border-2 border-gray-500 rounded' name='password' type="password" placeholder='Enter your password'></input>
+                <input className='block w-80 mx-auto m-4 bg-slate-600 p-2 rounded text-white' type="Submit"></input>
             </form>
+            <ToastContainer />
+            <p className='text-center text-2xl'>New to This site ? <span onClick={() => navigate("/register")} className='text-green-700 hover:text-red-700 cursor-pointer'>Please Register</span></p>
         </div>
     );
 };
